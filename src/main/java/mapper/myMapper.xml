@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.myMapper">
+	<delete id="deleteCart" parameterType="model.CartItem">
+		delete from myhome_usercart_tbl where id=#{id} and code=#{code}
+	</delete>
+	<select id="getCart" parameterType="String" resultType="model.CartItem">
+		select * from myhome_usercart_tbl where id=#{id}
+	</select>
+	<select id="getMaxCart" resultType="Integer">
+		select max(seqno) from myhome_usercart_tbl
+	</select>
+	<update id="updateCart" parameterType="model.CartItem">
+		update myhome_usercart_tbl set num=#{num} 
+		where id=#{id} and code=#{code}
+	</update>
+	<insert id="addCart" parameterType="model.CartItem">
+		insert into myhome_usercart_tbl values(#{seqno},#{id},#{code},#{num})
+	</insert>
+	<update id="updateItem" parameterType="model.Item">
+		update myhome_useritem_tbl set title=#{title},price=#{price},
+		origin=#{origin},content=#{content} where code=#{code}
+	</update>
+	<delete id="deleteItem" parameterType="String">
+		delete from myhome_useritem_tbl where code=#{code}
+	</delete>
+	<sql id="itemColumns">
+		code, title, price, content, origin,
+				to_char(item_date,'YY/MM/DD') "item_date"	
+	</sql>
+	<select id="getItemDetail" parameterType="String" resultType="model.Item">
+		select <include refid="itemColumns"/>
+		from myhome_useritem_tbl where code=#{code}	
+	</select>
+	<select id="getItemCount" resultType="Integer">
+		select count(*) from myhome_useritem_tbl
+	</select>
+	<select id="getAllItems" parameterType="model.FromTo" 
+								resultType="model.Item">
+		select code, title, price, origin 
+		from (select rownum rn, code, title, price, origin 
+          		from (select code,title,price,origin  
+						from myhome_useritem_tbl)) 
+		where rn > #{from} and rn <![CDATA[<]]> #{to}	
+	</select>
+	<select id="getItemCode" parameterType="String" resultType="String">
+		select code from myhome_useritem_tbl where code=#{code}
+	</select>
+	<insert id="putItem" parameterType="model.Item">
+		insert into myhome_useritem_tbl values(#{code},#{title},#{price},
+			#{content},#{origin},sysdate)
+	</insert>
+	<update id="updateBBS" parameterType="model.BBS">
+		update myhome_userbbs_tbl set title=#{title},content=#{content}
+		where seqno=#{seqno}
+	</update>
+	<delete id="deleteBBS" parameterType="Integer">
+		delete from myhome_userbbs_tbl where seqno=#{id}
+	</delete>
+	<select id="getBBS" parameterType="Integer" resultType="model.BBS">
+		select seqno, title, id, to_char(bbs_date,'YY/MM/DD') "bbs_date",
+				content
+		from myhome_userbbs_tbl where seqno=#{id}
+	</select>
+	<select id="getBBSCount" resultType="Integer">
+		select count(*) from myhome_userbbs_tbl
+	</select>
+	<select id="getAllBBS" parameterType="model.FromTo" resultType="model.BBS">
+		select seqno, title, id, to_char(bbs_date,'YY/MM/DD') "bbs_date"
+		from (select rownum rn, seqno, title, id, bbs_date 
+			from myhome_userbbs_tbl 
+			order by seqno desc) 
+		where rn > #{from} and rn <![CDATA[<]]> #{to}
+	</select>
+	<insert id="putBBS" parameterType="model.BBS">
+		insert into myhome_userbbs_tbl values(
+		#{seqno},#{title},#{id},#{content},sysdate)
+	</insert>
+	<select id="maxBBS" resultType="Integer">
+		select max(seqno) from myhome_userbbs_tbl
+	</select>
+	<insert id="register" parameterType="model.Customer">
+		insert into myhome_customers_tbl 
+		values(#{id},#{pwd},#{name},#{addr},#{phone},
+		#{gender},#{email},#{job},sysdate)
+	</insert>
+	<select id="getId" parameterType="String" resultType="String">
+		select id from myhome_customers_tbl where id=#{id}  
+	</select>
+	<select id="getPwd" parameterType="String" resultType="String">
+		select pwd from myhome_customers_tbl where id=#{id}
+	</select>
+</mapper>
+
+
+
+
+
+
+
